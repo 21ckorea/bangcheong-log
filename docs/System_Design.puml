@@ -1,0 +1,51 @@
+@startuml
+!theme plain
+title Bangcheong-Log Service Flow & Architecture
+
+actor "User (사용자)" as User
+participant "Bangcheong-Log Frontend" as Front
+participant "API Server" as API
+participant "Crawler" as Crawler
+participant "Database" as DB
+participant "Broadcasting Sites\n(KBS, MBC, SBS)" as External
+
+== Data Collection (Background) ==
+loop Every 6 Hours
+    Crawler -> External: Request Audience Scheduling Page
+    activate External
+    External --> Crawler: HTML Content
+    deactivate External
+    Crawler -> Crawler: Parse & Extract (Date, Guest, Link)
+    Crawler -> DB: Update Program Info (Upsert)
+end
+
+== User Action: Discover & Notify ==
+User -> Front: Access Main Page
+activate Front
+Front -> API: Get Program List (Sort by D-Day)
+activate API
+API -> DB: Query Active Programs
+DB --> API: Return Data
+API --> Front: JSON Response
+Front --> User: Display Program Cards
+deactivate Front
+
+User -> Front: "Notify Me" (Keyword/Program)
+Front -> API: Register Notification (User ID, Keyword)
+API -> DB: Save Preference
+
+== User Action: Apply ==
+User -> Front: Click "Apply Now"
+Front -> User: Redirect to Broadcasting Site (Deep Link)
+User -> External: Submit Application (Login Required on Site)
+
+== User Action: Log ==
+User -> Front: Write Review (My Log)
+activate Front
+Front -> API: Save Log (Photo, Text, Rating)
+API -> DB: Insert Log Entry
+API -> Front: Success
+Front --> User: Show Digital Ticket/Badge
+deactivate Front
+
+@enduml

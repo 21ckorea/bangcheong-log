@@ -1,0 +1,51 @@
+@startuml
+!theme plain
+title 방청로그 (Bangcheong-Log) 서비스 흐름 및 아키텍처
+
+actor "User (사용자)" as User
+participant "방청로그 프론트엔드" as Front
+participant "API 서버" as API
+participant "크롤러 (Crawler)" as Crawler
+participant "데이터베이스 (DB)" as DB
+participant "방송사 사이트\n(KBS, MBC, SBS)" as External
+
+== 데이터 수집 (백그라운드) ==
+loop 6시간마다
+    Crawler -> External: 방청 신청 페이지 요청
+    activate External
+    External --> Crawler: HTML 콘텐츠 반환
+    deactivate External
+    Crawler -> Crawler: 파싱 및 데이터 추출 (날짜, 출연진, 링크)
+    Crawler -> DB: 프로그램 정보 업데이트 (Upsert)
+end
+
+== 사용자 활동: 탐색 및 알림 ==
+User -> Front: 메인 페이지 접속
+activate Front
+Front -> API: 프로그램 목록 요청 (D-Day순 정렬)
+activate API
+API -> DB: 진행 중인 프로그램 조회
+DB --> API: 데이터 반환
+API --> Front: JSON 응답
+Front --> User: 프로그램 카드 목록 표시
+deactivate Front
+
+User -> Front: "알림 받기" 설정 (키워드/프로그램)
+Front -> API: 알림 등록 (사용자 ID, 키워드)
+API -> DB: 설정 저장
+
+== 사용자 활동: 응모 (Apply) ==
+User -> Front: "응모하러 가기" 버튼 클릭
+Front -> User: 방송사 사이트로 리다이렉트 (딥링크)
+User -> External: 방청 신청 수행 (방송사 로그인 필요)
+
+== 사용자 활동: 기록 (Log) ==
+User -> Front: 후기 작성 (나만의 방청로그)
+activate Front
+Front -> API: 로그 저장 (사진, 텍스트, 별점)
+API -> DB: 로그 데이터 추가
+API -> Front: 성공 응답
+Front --> User: 디지털 티켓/배지 표시
+deactivate Front
+
+@enduml
