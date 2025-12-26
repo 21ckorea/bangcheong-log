@@ -62,15 +62,20 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+          <div className="mb-2 inline-flex items-center rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-400">
+            ✨ 모든 방송사 방청 정보가 한곳에!
+          </div>
           <h1 className="text-3xl font-bold leading-tight">
-            나의 첫 번째 <br />
+            흩어진 방청 신청, <br />
             <span className="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
-              방청 기록
+              알림 받고 한 번에
             </span>
-            을 시작해봐!
+            <br />
+            성공해봐!
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            세상에서 가장 빠른 본방사수, 방청로그
+          <p className="mt-3 text-muted-foreground leading-relaxed">
+            최소한의 노력으로 최대의 당첨 확률! <br />
+            방청 기록은 덤이야 😉
           </p>
         </motion.div>
 
@@ -102,8 +107,8 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + idx * 0.1 }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${idx === 0
-                  ? "bg-primary text-white shadow-lg shadow-primary/25"
-                  : "bg-secondary/20 text-secondary-foreground hover:bg-secondary/30 border border-white/5"
+                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                : "bg-secondary/20 text-secondary-foreground hover:bg-secondary/30 border border-white/5"
                 }`}
             >
               {cat}
