@@ -11,7 +11,6 @@ export const BottomNav = () => {
 
     const navItems = [
         { name: "홈", path: "/", icon: Home },
-        { name: "응모", path: "/apply", icon: Calendar },
         { name: "로그", path: "/log", icon: PenTool },
         { name: "MY", path: "/profile", icon: User },
     ];

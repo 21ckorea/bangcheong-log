@@ -4,20 +4,24 @@ import { crawlKBS } from '@/lib/crawler/kbs';
 import { crawlMBC } from '@/lib/crawler/mbc';
 import { crawlSBS } from '@/lib/crawler/sbs';
 import { crawlKBSDiscovery } from '@/lib/crawler/discovery/kbs-discovery';
+import { crawlJTBC } from '@/lib/crawler/jtbc';
+import { crawlTVChosun } from '@/lib/crawler/tvchosun';
 
 export async function POST() { // Use POST for manual triggering
     try {
         console.log('Starting crawler job...');
 
         // 1. Run Crawlers (Parallel)
-        const [kbsData, mbcData, sbsData, discoveryData] = await Promise.all([
+        const [kbsData, mbcData, sbsData, discoveryData, jtbcData, tvChosunData] = await Promise.all([
             crawlKBS(),
             crawlMBC(),
             crawlSBS(),
-            crawlKBSDiscovery()
+            crawlKBSDiscovery(),
+            crawlJTBC(),
+            crawlTVChosun()
         ]);
 
-        const allData = [...kbsData, ...mbcData, ...sbsData, ...discoveryData];
+        const allData = [...kbsData, ...mbcData, ...sbsData, ...discoveryData, ...jtbcData, ...tvChosunData];
         let createdCount = 0;
         let updatedCount = 0;
 
@@ -60,6 +64,12 @@ export async function POST() { // Use POST for manual triggering
                     dataToUpdate.applyEndDate = item.applyEnd;
                 }
 
+                // Always update castData to ensure links/guides are fresh
+                const newCastData = JSON.stringify({ link: item.link, guideLink: (item as any).guideLink });
+                if (existing.castData !== newCastData) {
+                    dataToUpdate.castData = newCastData;
+                }
+
                 if (Object.keys(dataToUpdate).length > 0) {
                     await prisma.program.update({
                         where: { id: existing.id },
@@ -76,7 +86,7 @@ export async function POST() { // Use POST for manual triggering
                         recordDate: item.normalizedDate || new Date(), // Fallback to now if date parse fails
                         applyStartDate: new Date(), // We don't have exact start/end from list API yet
                         applyEndDate: item.applyEnd || new Date(), // Use crawled announcement date
-                        castData: JSON.stringify({ link: item.link }), // Store link in castData for now
+                        castData: JSON.stringify({ link: item.link, guideLink: (item as any).guideLink }), // Store links
                     }
                 });
                 createdCount++;

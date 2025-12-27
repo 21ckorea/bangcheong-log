@@ -192,24 +192,45 @@ export default function HomeClient({ programs }: HomeClientProps) {
 
 
                                     <div className="flex justify-end mt-2">
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            className="h-7 text-xs px-3 hover:bg-primary/10 hover:text-primary"
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // Prevent card click
+                                        <div className="flex gap-2">
+                                            {(() => {
                                                 try {
                                                     const data = JSON.parse(program.castData);
-                                                    if (data.link) {
-                                                        window.open(data.link, '_blank');
-                                                    }
-                                                } catch (err) {
-                                                    // Fallback or ignore
+                                                    return data.guideLink ? (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            className="h-7 text-xs px-3 hover:bg-primary/10 hover:text-primary"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                window.open(data.guideLink, '_blank');
+                                                            }}
+                                                        >
+                                                            📝 응모 가이드
+                                                        </Button>
+                                                    ) : null;
+                                                } catch (e) {
+                                                    return null;
                                                 }
-                                            }}
-                                        >
-                                            자세히 보기 &rarr;
-                                        </Button>
+                                            })()}
+
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-7 text-xs px-3 hover:bg-primary/10 hover:text-primary"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    try {
+                                                        const data = JSON.parse(program.castData);
+                                                        if (data.link) {
+                                                            window.open(data.link, '_blank');
+                                                        }
+                                                    } catch (err) { }
+                                                }}
+                                            >
+                                                자세히 보기 &rarr;
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>

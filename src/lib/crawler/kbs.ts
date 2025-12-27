@@ -29,6 +29,13 @@ const PROGRAMS = [
         type: 'ticket',
         linkPattern: 'https://program.kbs.co.kr/1tv/enter/gayo/pc/board.html?smenu=3b7ca1&m_seq=7',
     },
+    {
+        code: '139', // m_seq for The Seasons
+        name: '더 시즌즈',
+        broadcaster: 'KBS2',
+        type: 'ticket',
+        linkPattern: 'https://program.kbs.co.kr/2tv/enter/theseasons/pc/board.html?smenu=8c80ee&bbs_loc=139,list,none,1,0',
+    },
 ];
 
 export interface CrawledProgramData {
@@ -39,6 +46,7 @@ export interface CrawledProgramData {
     link: string;
     isApplying: boolean;
     applyEnd?: Date | null; // Add applyEnd field
+    guideLink?: string; // Add guideLink field
 }
 
 
@@ -147,6 +155,8 @@ async function crawlKBSTicket(program: any): Promise<CrawledProgramData[]> {
             }
         });
 
+        const guideLink = 'https://kbsticket.kbs.co.kr/popupnew/guide.do';
+
         results.push({
             title: title || `${program.name} 방청신청`,
             broadcaster: program.broadcaster,
@@ -155,6 +165,7 @@ async function crawlKBSTicket(program: any): Promise<CrawledProgramData[]> {
             link: program.linkPattern,
             isApplying: true,
             applyEnd: applyEnd,
+            guideLink: guideLink, // Add guide link
         });
     });
 
