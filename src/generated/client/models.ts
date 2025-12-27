@@ -9,5 +9,9 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Account'
+export type * from './models/Session'
+export type * from './models/FavoriteProgram'
+export type * from './models/ApplicationLog'
 export type * from './models/Program'
 export type * from './commonInputTypes'

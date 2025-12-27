@@ -10,6 +10,9 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Program } from "@/generated/client/client";
 import { useState } from "react";
+import { useSession, signIn } from "next-auth/react";
+import FavoriteButton from "@/components/programs/FavoriteButton";
+import ApplicationLogButton from "@/components/programs/ApplicationLogButton";
 
 const CATEGORIES = ["전체", "음악방송", "토크쇼", "예능", "공개방송"];
 
@@ -66,11 +69,14 @@ function getGradient(id: string) {
 
 interface HomeClientProps {
     programs: Program[];
+    favoriteIds: string[];
+    loggedProgramIds: string[];
 }
 
-export default function HomeClient({ programs }: HomeClientProps) {
+export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: HomeClientProps) {
     const [selectedCategory, setSelectedCategory] = useState("전체");
     const [errorImages, setErrorImages] = useState<Record<string, boolean>>({});
+    const { data: session } = useSession();
 
     const filteredPrograms = selectedCategory === "전체"
         ? programs
@@ -197,11 +203,23 @@ export default function HomeClient({ programs }: HomeClientProps) {
                                 {/* Content */}
                                 <div className="flex-1 p-4 flex flex-col justify-between">
                                     <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-background/50 text-muted-foreground backdrop-blur-sm">
-                                                {program.category}
-                                            </Badge>
-                                            <span className="text-xs font-bold text-primary/80">{program.broadcaster}</span>
+                                        <div className="flex items-center justify-between gap-2 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-background/50 text-muted-foreground backdrop-blur-sm">
+                                                    {program.category}
+                                                </Badge>
+                                                <span className="text-xs font-bold text-primary/80">{program.broadcaster}</span>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <ApplicationLogButton
+                                                    programId={program.id}
+                                                    initialHasLog={loggedProgramIds.includes(program.id)}
+                                                />
+                                                <FavoriteButton
+                                                    programId={program.id}
+                                                    initialIsFavorite={favoriteIds.includes(program.id)}
+                                                />
+                                            </div>
                                         </div>
                                         <h3 className="font-bold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">{program.title}</h3>
 
@@ -247,6 +265,13 @@ export default function HomeClient({ programs }: HomeClientProps) {
                                                 className="h-7 text-xs px-3 hover:bg-primary/10 hover:text-primary"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
+
+                                                    // Check if user is logged in
+                                                    if (!session) {
+                                                        signIn("google");
+                                                        return;
+                                                    }
+
                                                     try {
                                                         const data = JSON.parse(program.castData);
                                                         if (data.link) {

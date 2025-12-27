@@ -5,15 +5,73 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
+// NextAuth.js User model
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  keywords  String   // Comma separated keywords
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  favorites     FavoriteProgram[]
+  logs          ApplicationLog[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// OAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+}
+
+// Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Favorite programs
+model FavoriteProgram {
+  id        String   @id @default(cuid())
+  userId    String
+  programId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, programId])
+}
+
+// Application logs
+model ApplicationLog {
+  id        String   @id @default(cuid())
+  userId    String
+  programId String
+  status    String   // "applied", "pending", "accepted", "rejected"
+  notes     String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -27,6 +85,8 @@ model Program {
   applyStartDate DateTime
   applyEndDate   DateTime
   castData       String   // JSON string
+  favorites      FavoriteProgram[]
+  logs           ApplicationLog[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

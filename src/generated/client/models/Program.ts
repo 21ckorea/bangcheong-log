@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -222,6 +222,8 @@ export type ProgramWhereInput = {
   castData?: Prisma.StringFilter<"Program"> | string
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
+  favorites?: Prisma.FavoriteProgramListRelationFilter
+  logs?: Prisma.ApplicationLogListRelationFilter
 }
 
 export type ProgramOrderByWithRelationInput = {
@@ -235,6 +237,8 @@ export type ProgramOrderByWithRelationInput = {
   castData?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  favorites?: Prisma.FavoriteProgramOrderByRelationAggregateInput
+  logs?: Prisma.ApplicationLogOrderByRelationAggregateInput
 }
 
 export type ProgramWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +255,8 @@ export type ProgramWhereUniqueInput = Prisma.AtLeast<{
   castData?: Prisma.StringFilter<"Program"> | string
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
+  favorites?: Prisma.FavoriteProgramListRelationFilter
+  logs?: Prisma.ApplicationLogListRelationFilter
 }, "id">
 
 export type ProgramOrderByWithAggregationInput = {
@@ -296,6 +302,8 @@ export type ProgramCreateInput = {
   castData: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  favorites?: Prisma.FavoriteProgramCreateNestedManyWithoutProgramInput
+  logs?: Prisma.ApplicationLogCreateNestedManyWithoutProgramInput
 }
 
 export type ProgramUncheckedCreateInput = {
@@ -309,6 +317,8 @@ export type ProgramUncheckedCreateInput = {
   castData: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  favorites?: Prisma.FavoriteProgramUncheckedCreateNestedManyWithoutProgramInput
+  logs?: Prisma.ApplicationLogUncheckedCreateNestedManyWithoutProgramInput
 }
 
 export type ProgramUpdateInput = {
@@ -322,6 +332,8 @@ export type ProgramUpdateInput = {
   castData?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteProgramUpdateManyWithoutProgramNestedInput
+  logs?: Prisma.ApplicationLogUpdateManyWithoutProgramNestedInput
 }
 
 export type ProgramUncheckedUpdateInput = {
@@ -335,6 +347,8 @@ export type ProgramUncheckedUpdateInput = {
   castData?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteProgramUncheckedUpdateManyWithoutProgramNestedInput
+  logs?: Prisma.ApplicationLogUncheckedUpdateManyWithoutProgramNestedInput
 }
 
 export type ProgramCreateManyInput = {
@@ -376,6 +390,11 @@ export type ProgramUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type ProgramScalarRelationFilter = {
+  is?: Prisma.ProgramWhereInput
+  isNot?: Prisma.ProgramWhereInput
+}
+
 export type ProgramCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -415,6 +434,216 @@ export type ProgramMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type ProgramCreateNestedOneWithoutFavoritesInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutFavoritesInput, Prisma.ProgramUncheckedCreateWithoutFavoritesInput>
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutFavoritesInput
+  connect?: Prisma.ProgramWhereUniqueInput
+}
+
+export type ProgramUpdateOneRequiredWithoutFavoritesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutFavoritesInput, Prisma.ProgramUncheckedCreateWithoutFavoritesInput>
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutFavoritesInput
+  upsert?: Prisma.ProgramUpsertWithoutFavoritesInput
+  connect?: Prisma.ProgramWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProgramUpdateToOneWithWhereWithoutFavoritesInput, Prisma.ProgramUpdateWithoutFavoritesInput>, Prisma.ProgramUncheckedUpdateWithoutFavoritesInput>
+}
+
+export type ProgramCreateNestedOneWithoutLogsInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutLogsInput, Prisma.ProgramUncheckedCreateWithoutLogsInput>
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutLogsInput
+  connect?: Prisma.ProgramWhereUniqueInput
+}
+
+export type ProgramUpdateOneRequiredWithoutLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutLogsInput, Prisma.ProgramUncheckedCreateWithoutLogsInput>
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutLogsInput
+  upsert?: Prisma.ProgramUpsertWithoutLogsInput
+  connect?: Prisma.ProgramWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProgramUpdateToOneWithWhereWithoutLogsInput, Prisma.ProgramUpdateWithoutLogsInput>, Prisma.ProgramUncheckedUpdateWithoutLogsInput>
+}
+
+export type ProgramCreateWithoutFavoritesInput = {
+  id?: string
+  title: string
+  category: string
+  broadcaster: string
+  recordDate: Date | string
+  applyStartDate: Date | string
+  applyEndDate: Date | string
+  castData: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  logs?: Prisma.ApplicationLogCreateNestedManyWithoutProgramInput
+}
+
+export type ProgramUncheckedCreateWithoutFavoritesInput = {
+  id?: string
+  title: string
+  category: string
+  broadcaster: string
+  recordDate: Date | string
+  applyStartDate: Date | string
+  applyEndDate: Date | string
+  castData: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  logs?: Prisma.ApplicationLogUncheckedCreateNestedManyWithoutProgramInput
+}
+
+export type ProgramCreateOrConnectWithoutFavoritesInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutFavoritesInput, Prisma.ProgramUncheckedCreateWithoutFavoritesInput>
+}
+
+export type ProgramUpsertWithoutFavoritesInput = {
+  update: Prisma.XOR<Prisma.ProgramUpdateWithoutFavoritesInput, Prisma.ProgramUncheckedUpdateWithoutFavoritesInput>
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutFavoritesInput, Prisma.ProgramUncheckedCreateWithoutFavoritesInput>
+  where?: Prisma.ProgramWhereInput
+}
+
+export type ProgramUpdateToOneWithWhereWithoutFavoritesInput = {
+  where?: Prisma.ProgramWhereInput
+  data: Prisma.XOR<Prisma.ProgramUpdateWithoutFavoritesInput, Prisma.ProgramUncheckedUpdateWithoutFavoritesInput>
+}
+
+export type ProgramUpdateWithoutFavoritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  broadcaster?: Prisma.StringFieldUpdateOperationsInput | string
+  recordDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyStartDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyEndDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  castData?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  logs?: Prisma.ApplicationLogUpdateManyWithoutProgramNestedInput
+}
+
+export type ProgramUncheckedUpdateWithoutFavoritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  broadcaster?: Prisma.StringFieldUpdateOperationsInput | string
+  recordDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyStartDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyEndDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  castData?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  logs?: Prisma.ApplicationLogUncheckedUpdateManyWithoutProgramNestedInput
+}
+
+export type ProgramCreateWithoutLogsInput = {
+  id?: string
+  title: string
+  category: string
+  broadcaster: string
+  recordDate: Date | string
+  applyStartDate: Date | string
+  applyEndDate: Date | string
+  castData: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  favorites?: Prisma.FavoriteProgramCreateNestedManyWithoutProgramInput
+}
+
+export type ProgramUncheckedCreateWithoutLogsInput = {
+  id?: string
+  title: string
+  category: string
+  broadcaster: string
+  recordDate: Date | string
+  applyStartDate: Date | string
+  applyEndDate: Date | string
+  castData: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  favorites?: Prisma.FavoriteProgramUncheckedCreateNestedManyWithoutProgramInput
+}
+
+export type ProgramCreateOrConnectWithoutLogsInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutLogsInput, Prisma.ProgramUncheckedCreateWithoutLogsInput>
+}
+
+export type ProgramUpsertWithoutLogsInput = {
+  update: Prisma.XOR<Prisma.ProgramUpdateWithoutLogsInput, Prisma.ProgramUncheckedUpdateWithoutLogsInput>
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutLogsInput, Prisma.ProgramUncheckedCreateWithoutLogsInput>
+  where?: Prisma.ProgramWhereInput
+}
+
+export type ProgramUpdateToOneWithWhereWithoutLogsInput = {
+  where?: Prisma.ProgramWhereInput
+  data: Prisma.XOR<Prisma.ProgramUpdateWithoutLogsInput, Prisma.ProgramUncheckedUpdateWithoutLogsInput>
+}
+
+export type ProgramUpdateWithoutLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  broadcaster?: Prisma.StringFieldUpdateOperationsInput | string
+  recordDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyStartDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyEndDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  castData?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteProgramUpdateManyWithoutProgramNestedInput
+}
+
+export type ProgramUncheckedUpdateWithoutLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  broadcaster?: Prisma.StringFieldUpdateOperationsInput | string
+  recordDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyStartDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applyEndDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  castData?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteProgramUncheckedUpdateManyWithoutProgramNestedInput
+}
+
+
+/**
+ * Count Type ProgramCountOutputType
+ */
+
+export type ProgramCountOutputType = {
+  favorites: number
+  logs: number
+}
+
+export type ProgramCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  favorites?: boolean | ProgramCountOutputTypeCountFavoritesArgs
+  logs?: boolean | ProgramCountOutputTypeCountLogsArgs
+}
+
+/**
+ * ProgramCountOutputType without action
+ */
+export type ProgramCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProgramCountOutputType
+   */
+  select?: Prisma.ProgramCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProgramCountOutputType without action
+ */
+export type ProgramCountOutputTypeCountFavoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FavoriteProgramWhereInput
+}
+
+/**
+ * ProgramCountOutputType without action
+ */
+export type ProgramCountOutputTypeCountLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ApplicationLogWhereInput
+}
 
 
 export type ProgramSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -428,6 +657,9 @@ export type ProgramSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   castData?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  favorites?: boolean | Prisma.Program$favoritesArgs<ExtArgs>
+  logs?: boolean | Prisma.Program$logsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProgramCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["program"]>
 
 export type ProgramSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -470,10 +702,20 @@ export type ProgramSelectScalar = {
 }
 
 export type ProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "broadcaster" | "recordDate" | "applyStartDate" | "applyEndDate" | "castData" | "createdAt" | "updatedAt", ExtArgs["result"]["program"]>
+export type ProgramInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  favorites?: boolean | Prisma.Program$favoritesArgs<ExtArgs>
+  logs?: boolean | Prisma.Program$logsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProgramCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ProgramIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ProgramIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $ProgramPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Program"
-  objects: {}
+  objects: {
+    favorites: Prisma.$FavoriteProgramPayload<ExtArgs>[]
+    logs: Prisma.$ApplicationLogPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
@@ -879,6 +1121,8 @@ readonly fields: ProgramFieldRefs;
  */
 export interface Prisma__ProgramClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  favorites<T extends Prisma.Program$favoritesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FavoriteProgramPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  logs<T extends Prisma.Program$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApplicationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -935,6 +1179,10 @@ export type ProgramFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  /**
    * Filter, which Program to fetch.
    */
   where: Prisma.ProgramWhereUniqueInput
@@ -953,6 +1201,10 @@ export type ProgramFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  /**
    * Filter, which Program to fetch.
    */
   where: Prisma.ProgramWhereUniqueInput
@@ -970,6 +1222,10 @@ export type ProgramFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Program
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
   /**
    * Filter, which Program to fetch.
    */
@@ -1019,6 +1275,10 @@ export type ProgramFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  /**
    * Filter, which Program to fetch.
    */
   where?: Prisma.ProgramWhereInput
@@ -1067,6 +1327,10 @@ export type ProgramFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  /**
    * Filter, which Programs to fetch.
    */
   where?: Prisma.ProgramWhereInput
@@ -1109,6 +1373,10 @@ export type ProgramCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Program
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
   /**
    * The data needed to create a Program.
    */
@@ -1157,6 +1425,10 @@ export type ProgramUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Program
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
   /**
    * The data needed to update a Program.
    */
@@ -1224,6 +1496,10 @@ export type ProgramUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  /**
    * The filter to search for the Program to update in case it exists.
    */
   where: Prisma.ProgramWhereUniqueInput
@@ -1250,6 +1526,10 @@ export type ProgramDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  /**
    * Filter which Program to delete.
    */
   where: Prisma.ProgramWhereUniqueInput
@@ -1270,6 +1550,54 @@ export type ProgramDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Program.favorites
+ */
+export type Program$favoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FavoriteProgram
+   */
+  select?: Prisma.FavoriteProgramSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FavoriteProgram
+   */
+  omit?: Prisma.FavoriteProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FavoriteProgramInclude<ExtArgs> | null
+  where?: Prisma.FavoriteProgramWhereInput
+  orderBy?: Prisma.FavoriteProgramOrderByWithRelationInput | Prisma.FavoriteProgramOrderByWithRelationInput[]
+  cursor?: Prisma.FavoriteProgramWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FavoriteProgramScalarFieldEnum | Prisma.FavoriteProgramScalarFieldEnum[]
+}
+
+/**
+ * Program.logs
+ */
+export type Program$logsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ApplicationLog
+   */
+  select?: Prisma.ApplicationLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ApplicationLog
+   */
+  omit?: Prisma.ApplicationLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ApplicationLogInclude<ExtArgs> | null
+  where?: Prisma.ApplicationLogWhereInput
+  orderBy?: Prisma.ApplicationLogOrderByWithRelationInput | Prisma.ApplicationLogOrderByWithRelationInput[]
+  cursor?: Prisma.ApplicationLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ApplicationLogScalarFieldEnum | Prisma.ApplicationLogScalarFieldEnum[]
+}
+
+/**
  * Program without action
  */
 export type ProgramDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1281,4 +1609,8 @@ export type ProgramDefaultArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Program
    */
   omit?: Prisma.ProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
 }

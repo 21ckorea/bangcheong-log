@@ -4,16 +4,27 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, Calendar, PenTool, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession, signIn } from "next-auth/react";
 
 export const BottomNav = () => {
     const pathname = usePathname();
     const router = useRouter();
+    const { data: session } = useSession();
 
     const navItems = [
         { name: "홈", path: "/", icon: Home },
         { name: "로그", path: "/log", icon: PenTool },
-        { name: "MY", path: "/profile", icon: User },
+        { name: "MY", path: "/profile", icon: User, requiresAuth: true },
     ];
+
+    const handleNavClick = (item: typeof navItems[0]) => {
+        // Check if item requires authentication
+        if (item.requiresAuth && !session) {
+            signIn("google");
+            return;
+        }
+        router.push(item.path);
+    };
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 pt-2 gradient-mask-t pointer-events-none">
@@ -23,7 +34,7 @@ export const BottomNav = () => {
                     return (
                         <button
                             key={item.path}
-                            onClick={() => router.push(item.path)}
+                            onClick={() => handleNavClick(item)}
                             className={cn(
                                 "relative flex flex-col items-center justify-center p-2 transition-colors",
                                 isActive ? "text-primary" : "text-muted-foreground hover:text-white"

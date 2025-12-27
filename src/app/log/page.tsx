@@ -1,21 +1,24 @@
-"use client";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth.config";
+import LogClient from "./LogClient";
+import { getApplicationLogs } from "@/app/actions/log";
 
-import { MobileWrapper } from "@/components/layout/MobileWrapper";
-import { BottomNav } from "@/components/layout/BottomNav";
-import { Header } from "@/components/layout/Header";
+export default async function LogPage() {
+    const session = await auth();
 
-export default function LogPage() {
-    return (
-        <MobileWrapper className="pb-24">
-            <Header />
-            <div className="p-6 flex flex-col items-center justify-center h-[70vh] text-center">
-                <h2 className="text-2xl font-bold mb-2">나의 기록</h2>
-                <p className="text-muted-foreground">
-                    다녀온 방청 후기를 남기는 공간이야. <br />
-                    멋진 로그 기능을 곧 선보일게! ✨
-                </p>
+    if (!session?.user) {
+        redirect("/");
+    }
+
+    const result = await getApplicationLogs();
+
+    if (!result.success) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-red-500">Failed to load logs</p>
             </div>
-            <BottomNav />
-        </MobileWrapper>
-    );
+        );
+    }
+
+    return <LogClient logs={result.data || []} />;
 }
