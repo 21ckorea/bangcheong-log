@@ -86,6 +86,8 @@ model Program {
   applyStartDate DateTime
   applyEndDate   DateTime
   castData       String   // JSON string
+  link           String?  // Program detail link
+  image          String?  // Program thumbnail image
   favorites      FavoriteProgram[]
   logs           ApplicationLog[]
   createdAt      DateTime @default(now())
