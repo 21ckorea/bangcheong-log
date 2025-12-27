@@ -23,5 +23,5 @@ export default async function AdminPage() {
         );
     }
 
-    return <AdminClient users={usersResult.data} stats={statsResult.data} />;
+    return <AdminClient users={usersResult.data || []} stats={statsResult.data || { totalUsers: 0, usersWithFavorites: 0, recentUsers: 0 }} />;
 }
