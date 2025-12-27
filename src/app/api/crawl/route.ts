@@ -64,8 +64,13 @@ export async function POST() { // Use POST for manual triggering
                     dataToUpdate.applyEndDate = item.applyEnd;
                 }
 
-                // Always update castData to ensure links/guides are fresh
-                const newCastData = JSON.stringify({ link: item.link, guideLink: (item as any).guideLink });
+
+                // Always update castData to ensure links/guides/images are fresh
+                const newCastData = JSON.stringify({
+                    link: item.link,
+                    guideLink: (item as any).guideLink,
+                    image: (item as any).image
+                });
                 if (existing.castData !== newCastData) {
                     dataToUpdate.castData = newCastData;
                 }
@@ -86,7 +91,11 @@ export async function POST() { // Use POST for manual triggering
                         recordDate: item.normalizedDate || new Date(), // Fallback to now if date parse fails
                         applyStartDate: new Date(), // We don't have exact start/end from list API yet
                         applyEndDate: item.applyEnd || new Date(), // Use crawled announcement date
-                        castData: JSON.stringify({ link: item.link, guideLink: (item as any).guideLink }), // Store links
+                        castData: JSON.stringify({
+                            link: item.link,
+                            guideLink: (item as any).guideLink,
+                            image: (item as any).image
+                        }), // Store links
                     }
                 });
                 createdCount++;

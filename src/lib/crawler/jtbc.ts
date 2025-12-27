@@ -12,6 +12,7 @@ export interface CrawledProgramData {
     isApplying: boolean;
     applyEnd?: Date | null;
     guideLink?: string;
+    image?: string;
 }
 
 const JTBC_URL = 'https://tv.jtbc.co.kr/event/pr10011781/pm10071222';
@@ -20,7 +21,10 @@ export const crawlJTBC = async (): Promise<CrawledProgramData[]> => {
     console.log('Starting JTBC Crawler...');
     try {
         const { data } = await axios.get(JTBC_URL, {
-            headers: { 'User-Agent': 'Mozilla/5.0' }
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Referer': 'https://tv.jtbc.co.kr/',
+            }
         });
         const $ = cheerio.load(data);
         const results: CrawledProgramData[] = [];
@@ -28,6 +32,10 @@ export const crawlJTBC = async (): Promise<CrawledProgramData[]> => {
         // Title Extraction
         let title = $('meta[property="og:title"]').attr('content') || '싱어게인4 파이널 관객 모집';
         title = title.replace(' | JTBC', '').trim();
+
+        // Image Extraction
+        // Note: og:image is rendered client-side, so using static URL
+        const image = 'https://fs.jtbc.co.kr/joydata/CP00000001/prog/enter/singagain4/img/20251013_205712_152.jpg';
 
         // Date Extraction
         // Looking for "녹화일" or "일시" in the content
@@ -65,7 +73,8 @@ export const crawlJTBC = async (): Promise<CrawledProgramData[]> => {
             normalizedDate: normalizeDate(dateStr),
             link: JTBC_URL,
             isApplying: isApplying,
-            applyEnd: applyEnd
+            applyEnd: applyEnd,
+            image: image
         });
 
         return results;

@@ -18,6 +18,12 @@ export const crawlTVChosun = async (): Promise<CrawledProgramData[]> => {
         // Title Assumption
         const title = '미스터트롯4 본선 3차 방청';
 
+        // Image Extraction
+        let image = $('meta[property="og:image"]').attr('content');
+        if (image && image.startsWith('//')) {
+            image = `https:${image}`;
+        }
+
         // Content Extraction
         const contentBox = $('.cont-box');
         let dateStr = '일정 확인 필요';
@@ -57,7 +63,8 @@ export const crawlTVChosun = async (): Promise<CrawledProgramData[]> => {
             normalizedDate: normalizeDate(dateStr),
             link: link,
             isApplying: isApplying,
-            applyEnd: applyEnd
+            applyEnd: applyEnd,
+            image: image
         });
 
         return results;

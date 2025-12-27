@@ -52,12 +52,12 @@ function formatDate(date: Date) {
 // Helper to get random gradient based on ID (deterministic)
 function getGradient(id: string) {
     const gradients = [
-        "from-blue-500 to-indigo-500",
-        "from-violet-500 to-purple-500",
-        "from-pink-500 to-rose-500",
-        "from-cyan-400 to-blue-400",
-        "from-emerald-500 to-teal-500",
-        "from-orange-500 to-amber-500",
+        "from-slate-400 to-slate-500",        // Sophisticated gray
+        "from-purple-300 to-purple-400",      // Soft purple
+        "from-rose-300 to-pink-400",          // Gentle rose
+        "from-sky-300 to-blue-400",           // Soft sky blue
+        "from-emerald-300 to-teal-400",       // Muted teal
+        "from-amber-300 to-orange-400",       // Warm amber
     ];
     // Simple hash of standard UUID or string to pick index
     const charCode = id.charCodeAt(0) + id.charCodeAt(id.length - 1);
@@ -70,6 +70,7 @@ interface HomeClientProps {
 
 export default function HomeClient({ programs }: HomeClientProps) {
     const [selectedCategory, setSelectedCategory] = useState("전체");
+    const [errorImages, setErrorImages] = useState<Record<string, boolean>>({});
 
     const filteredPrograms = selectedCategory === "전체"
         ? programs
@@ -157,13 +158,39 @@ export default function HomeClient({ programs }: HomeClientProps) {
                 ) : (
                     filteredPrograms.map((program) => (
                         <Card key={program.id} className="overflow-hidden border-0 bg-secondary/10 hover:bg-secondary/20 transition-colors group cursor-pointer">
-                            <CardContent className="p-0 flex h-auto min-h-32">
-                                {/* Image Placeholder with Gradient */}
-                                <div className={`w-28 h-full bg-gradient-to-br ${getGradient(program.id)} flex flex-col items-center justify-center text-white p-2 relative shrink-0`}>
-                                    <div className="absolute top-3 left-3">
-                                        <div className="bg-white/90 text-black px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm">
+                            <CardContent className="p-0 flex h-auto min-h-40">
+                                {/* Left Section: Split into Gradient Top + Image Bottom */}
+                                <div className="w-28 h-full flex flex-col shrink-0 overflow-hidden">
+                                    {/* Top: D-Day Badge with Gradient */}
+                                    <div className={`w-full h-16 flex items-center justify-center bg-gradient-to-br ${getGradient(program.id)} p-2`}>
+                                        <div className="bg-white/90 backdrop-blur-sm text-black px-3 py-1 rounded-full text-xs font-bold shadow-sm whitespace-nowrap border border-black/5">
                                             {calculateDDay(program.applyEndDate)}
                                         </div>
+                                    </div>
+
+                                    {/* Bottom: Program Image */}
+                                    <div className="w-full flex-1 relative bg-gray-200">
+                                        {(() => {
+                                            try {
+                                                const data = JSON.parse(program.castData);
+                                                if (data.image && !errorImages[program.id]) {
+                                                    return (
+                                                        <img
+                                                            src={data.image}
+                                                            alt={program.title}
+                                                            className="w-full h-full object-cover"
+                                                            onError={() => {
+                                                                setErrorImages(prev => ({ ...prev, [program.id]: true }));
+                                                            }}
+                                                        />
+                                                    );
+                                                }
+                                                // Fallback gradient if no image
+                                                return <div className={`w-full h-full bg-gradient-to-br ${getGradient(program.id)} opacity-30`} />;
+                                            } catch (e) {
+                                                return <div className={`w-full h-full bg-gradient-to-br ${getGradient(program.id)} opacity-30`} />;
+                                            }
+                                        })()}
                                     </div>
                                 </div>
 

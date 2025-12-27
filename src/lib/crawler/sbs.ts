@@ -54,6 +54,7 @@ export const crawlSBS = async (): Promise<CrawledProgramData[]> => {
         link: 'https://programs.sbs.co.kr/enter/gayo/basicinfo/83552',
         isApplying: true, // Always "applying" in the sense that it's recurring
         applyEnd: thursday, // Application deadline
+        image: 'https://img2.sbs.co.kr/img/sbs_cms/WE/2025/10/29/gPm1761716656469-640-360.jpg',
     });
 
     console.log(`Generated SBS Inkigayo for Sunday ${sunday.toLocaleDateString()}`);

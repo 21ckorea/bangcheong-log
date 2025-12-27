@@ -13,6 +13,7 @@ const PROGRAMS = [
         name: '뮤직뱅크',
         broadcaster: 'KBS2',
         type: 'api', // Uses list_board API
+        posterUrl: 'https://programres.kbs.co.kr/t2000-0027/2023/9/7/1694061263472_465729.jpg',
         linkPattern: 'https://program.kbs.co.kr/2tv/enter/musicbank/pc/board.html?smenu=3b7ca1&m_seq=',
     },
     {
@@ -20,6 +21,7 @@ const PROGRAMS = [
         name: '개그콘서트',
         broadcaster: 'KBS2',
         type: 'ticket', // Uses kbsticket crawling
+        posterUrl: 'https://programres.kbs.co.kr/t2000-0065/2023/11/24/1700790850535_484414.jpg',
         linkPattern: 'https://program.kbs.co.kr/2tv/enter/gagcon/pc/board.html?smenu=3b7ca1&m_seq=8',
     },
     {
@@ -27,6 +29,7 @@ const PROGRAMS = [
         name: '가요무대',
         broadcaster: 'KBS1',
         type: 'ticket',
+        posterUrl: 'https://img.kbs.co.kr/test/metahubtest/program/T2000/T2000-0113/PS-2013139970-01-000/PS-2013139970-01-000_01_01_04.jpg',
         linkPattern: 'https://program.kbs.co.kr/1tv/enter/gayo/pc/board.html?smenu=3b7ca1&m_seq=7',
     },
     {
@@ -34,6 +37,7 @@ const PROGRAMS = [
         name: '더 시즌즈',
         broadcaster: 'KBS2',
         type: 'ticket',
+        posterUrl: 'https://programres.kbs.co.kr/t2022-1011/2025/8/21/1755755086924_599504.jpg',
         linkPattern: 'https://program.kbs.co.kr/2tv/enter/theseasons/pc/board.html?smenu=8c80ee&bbs_loc=139,list,none,1,0',
     },
 ];
@@ -47,6 +51,7 @@ export interface CrawledProgramData {
     isApplying: boolean;
     applyEnd?: Date | null; // Add applyEnd field
     guideLink?: string; // Add guideLink field
+    image?: string; // Add image field
 }
 
 
@@ -106,6 +111,7 @@ async function crawlKBSApi(program: any): Promise<CrawledProgramData[]> {
         normalizedDate: normalizeDate(item.title),
         link: `${program.linkPattern}${item.post_id}`,
         isApplying: true,
+        image: program.posterUrl,
     }));
 }
 
@@ -135,7 +141,10 @@ async function crawlKBSTicket(program: any): Promise<CrawledProgramData[]> {
     const $ = cheerio.load(html);
     const results: CrawledProgramData[] = [];
 
+    // console.log(`[DEBUG] Parsing ${$('li.attend-list-box').length} items`);
+
     $('li.attend-list-box').each((_, el) => {
+
         const state = $(el).find('.state').text().trim();
         // console.log(`[DEBUG] Item state: '${state}'`);
 
@@ -165,7 +174,8 @@ async function crawlKBSTicket(program: any): Promise<CrawledProgramData[]> {
             link: program.linkPattern,
             isApplying: true,
             applyEnd: applyEnd,
-            guideLink: guideLink, // Add guide link
+            guideLink: guideLink,
+            image: program.posterUrl // Use configured poster
         });
     });
 
