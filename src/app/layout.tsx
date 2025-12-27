@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/auth/AuthProvider";
+import InAppBrowserGuard from "@/components/common/InAppBrowserGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,7 +64,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen selection:bg-purple-500/30`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <InAppBrowserGuard />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
