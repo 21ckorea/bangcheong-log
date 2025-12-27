@@ -4,7 +4,11 @@ import { Header } from "@/components/layout/Header";
 import { MobileWrapper } from "@/components/layout/MobileWrapper";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Users, Heart, UserPlus } from "lucide-react";
+import { Users, Heart, UserPlus, ExternalLink, CheckCircle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { updateProgramRequestStatus } from "@/app/actions/request";
+import { useState } from "react";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface User {
     id: string;
@@ -23,12 +27,50 @@ interface Stats {
     recentUsers: number;
 }
 
+interface ProgramRequest {
+    id: string;
+    url: string;
+    title: string | null;
+    status: string;
+    isAnonymous: boolean;
+    createdAt: Date;
+    user: {
+        name: string | null;
+        email: string | null;
+    } | null;
+}
+
 interface AdminClientProps {
     users: User[];
     stats: Stats;
+    requests: ProgramRequest[];
 }
 
-export default function AdminClient({ users, stats }: AdminClientProps) {
+export default function AdminClient({ users, stats, requests }: AdminClientProps) {
+    const [updatingState, setUpdatingState] = useState<string | null>(null);
+    const [rejectId, setRejectId] = useState<string | null>(null);
+    const [rejectionReason, setRejectionReason] = useState("");
+
+    async function handleStatusUpdate(id: string, newStatus: string) {
+        if (newStatus === 'rejected') {
+            setRejectId(id);
+            setRejectionReason("");
+            return;
+        }
+
+        setUpdatingState(id);
+        await updateProgramRequestStatus(id, newStatus);
+        setUpdatingState(null);
+    }
+
+    async function confirmRejection() {
+        if (!rejectId) return;
+
+        setUpdatingState(rejectId);
+        setRejectId(null); // Close dialog
+        await updateProgramRequestStatus(rejectId, 'rejected', rejectionReason);
+        setUpdatingState(null);
+    }
     return (
         <MobileWrapper className="pb-24">
             <Header />
@@ -55,7 +97,7 @@ export default function AdminClient({ users, stats }: AdminClientProps) {
                         <CardContent className="p-4">
                             <div className="flex items-center gap-2 mb-2">
                                 <Heart className="w-4 h-4 text-pink-500" />
-                                <span className="text-xs text-muted-foreground">관심 등록</span>
+                                <span className="text-xs text-muted-foreground">관심 등록 유저</span>
                             </div>
                             <p className="text-2xl font-bold">{stats.usersWithFavorites}</p>
                         </CardContent>
@@ -65,11 +107,85 @@ export default function AdminClient({ users, stats }: AdminClientProps) {
                         <CardContent className="p-4">
                             <div className="flex items-center gap-2 mb-2">
                                 <UserPlus className="w-4 h-4 text-blue-500" />
-                                <span className="text-xs text-muted-foreground">최근 7일</span>
+                                <span className="text-xs text-muted-foreground">신규 가입 (7일)</span>
                             </div>
                             <p className="text-2xl font-bold">{stats.recentUsers}</p>
                         </CardContent>
                     </Card>
+                </div>
+
+                {/* Program Requests */}
+                <div className="space-y-3 mb-8">
+                    <h2 className="text-lg font-bold mb-3">프로그램 요청 ({requests.filter(r => r.status === 'pending').length}건 대기중)</h2>
+                    {requests.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">접수된 요청이 없습니다.</p>
+                    ) : (
+                        requests.map((request) => (
+                            <Card key={request.id} className="border-0 bg-secondary/10">
+                                <CardContent className="p-4">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${request.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                        request.status === 'processed' ? 'bg-green-500/10 text-green-500' :
+                                                            'bg-red-500/10 text-red-500'
+                                                        }`}>
+                                                        {request.status === 'pending' ? '대기중' :
+                                                            request.status === 'processed' ? '완료' : '거절됨'}
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {new Date(request.createdAt).toLocaleDateString("ko-KR")}
+                                                    </span>
+                                                    {request.isAnonymous && <span className="text-xs text-muted-foreground">(익명)</span>}
+                                                </div>
+                                                <h3 className="font-semibold mt-1">
+                                                    {request.title || "제목 없음"}
+                                                </h3>
+                                                <a
+                                                    href={request.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="text-sm text-blue-500 hover:underline flex items-center gap-1 mt-1 truncate max-w-[300px]"
+                                                >
+                                                    <ExternalLink className="w-3 h-3" />
+                                                    {request.url}
+                                                </a>
+                                                {!request.isAnonymous && request.user && (
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        요청자: {request.user.name} ({request.user.email})
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            {request.status === 'pending' && (
+                                                <div className="flex items-center gap-1">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-50"
+                                                        onClick={() => handleStatusUpdate(request.id, 'processed')}
+                                                        disabled={updatingState === request.id}
+                                                    >
+                                                        <CheckCircle className="w-5 h-5" />
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                                        onClick={() => handleStatusUpdate(request.id, 'rejected')}
+                                                        disabled={updatingState === request.id}
+                                                    >
+                                                        <XCircle className="w-5 h-5" />
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
                 </div>
 
                 {/* User List */}
@@ -107,9 +223,39 @@ export default function AdminClient({ users, stats }: AdminClientProps) {
                         </Card>
                     ))}
                 </div>
+
             </div>
 
             <BottomNav />
-        </MobileWrapper>
+
+            <Dialog
+                isOpen={!!rejectId}
+                onClose={() => setRejectId(null)}
+                title="등록 거절 사유 입력"
+            >
+                <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                        거절 사유를 입력하면 요청자에게 알림으로 전송됩니다.
+                    </p>
+                    <textarea
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        placeholder="예: 유효하지 않은 URL입니다."
+                        className="w-full h-32 p-3 rounded-lg border bg-background focus:ring-2 focus:ring-violet-500 outline-none resize-none"
+                    />
+                    <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={() => setRejectId(null)}>
+                            취소
+                        </Button>
+                        <Button
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                            onClick={confirmRejection}
+                        >
+                            거절하기
+                        </Button>
+                    </div>
+                </div>
+            </Dialog>
+        </MobileWrapper >
     );
 }
