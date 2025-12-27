@@ -8,7 +8,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Program } from "@/generated/client/client";
+import { Program } from "@prisma/client";
 import { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import FavoriteButton from "@/components/programs/FavoriteButton";
