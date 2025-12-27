@@ -22,6 +22,13 @@ const PROGRAMS = [
         type: 'ticket', // Uses kbsticket crawling
         linkPattern: 'https://program.kbs.co.kr/2tv/enter/gagcon/pc/board.html?smenu=3b7ca1&m_seq=8',
     },
+    {
+        code: '7', // m_seq for Gayo Stage
+        name: '가요무대',
+        broadcaster: 'KBS1',
+        type: 'ticket',
+        linkPattern: 'https://program.kbs.co.kr/1tv/enter/gayo/pc/board.html?smenu=3b7ca1&m_seq=7',
+    },
 ];
 
 export interface CrawledProgramData {

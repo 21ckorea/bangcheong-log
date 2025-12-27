@@ -1,16 +1,23 @@
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { crawlKBS } from '@/lib/crawler/kbs';
+import { crawlMBC } from '@/lib/crawler/mbc';
+import { crawlSBS } from '@/lib/crawler/sbs';
+import { crawlKBSDiscovery } from '@/lib/crawler/discovery/kbs-discovery';
 
 export async function POST() { // Use POST for manual triggering
     try {
         console.log('Starting crawler job...');
 
-        // 1. Run Crawlers (Currently only KBS)
-        const kbsData = await crawlKBS();
+        // 1. Run Crawlers (Parallel)
+        const [kbsData, mbcData, sbsData, discoveryData] = await Promise.all([
+            crawlKBS(),
+            crawlMBC(),
+            crawlSBS(),
+            crawlKBSDiscovery()
+        ]);
 
-        const allData = [...kbsData];
+        const allData = [...kbsData, ...mbcData, ...sbsData, ...discoveryData];
         let createdCount = 0;
         let updatedCount = 0;
 
