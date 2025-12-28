@@ -9,93 +9,122 @@ import { Badge } from "@/components/ui/Badge";
 import CommentSection from "@/components/program/CommentSection";
 import ShareButton from "@/components/common/ShareButton";
 import { formatDate } from "date-fns";
+import { LocationCard } from "@/components/program/LocationCard";
+import { TipsSection } from "@/components/program/TipsSection";
+import { Header } from "@/components/layout/Header";
+import { BottomNav } from "@/components/layout/BottomNav";
+
+interface Program {
+    id: string;
+    title: string;
+    broadcaster: string;
+    recordDate: Date;
+    applyStartDate: Date;
+    applyEndDate: Date;
+    link: string | null;
+    image: string | null;
+    status: string; // derived
+    tips?: string | null;
+}
+
+interface Comment {
+    id: string;
+    content: string;
+    createdAt: Date;
+    user: {
+        id: string;
+        name: string | null;
+        image: string | null;
+    };
+}
 
 interface ProgramDetailClientProps {
     program: Program;
-    comments: any[];
+    initialComments: Comment[];
+    userId?: string;
 }
 
-export default function ProgramDetailClient({ program, comments }: ProgramDetailClientProps) {
+export default function ProgramDetailClient({ program, initialComments, userId }: ProgramDetailClientProps) {
     const router = useRouter();
-
-    let programData: any = {};
-    try {
-        programData = JSON.parse(program.castData);
-    } catch (e) { }
 
     return (
         <MobileWrapper className="pb-24">
-            {/* Header */}
-            <div className="h-14 px-4 flex items-center gap-4 bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/5">
-                <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                </button>
-                <span className="font-bold text-lg truncate flex-1">{program.title}</span>
-                <ShareButton title={program.title} text={`${program.broadcaster} ${program.category} 방청 신청하세요!`} />
-            </div>
+            <Header
+                title={program.broadcaster}
+                showBack
+                rightElement={<ShareButton title={program.title} text={`[방청로그] ${program.title} 함께 신청해요!`} />}
+            />
 
-            <div className="p-0">
+            <div className="min-h-[50vh]">
                 {/* Hero Image */}
-                <div className="aspect-video w-full bg-secondary/20 relative overflow-hidden">
-                    {programData.image ? (
-                        <img src={programData.image} alt={program.title} className="w-full h-full object-cover" />
+                <div className="aspect-video w-full bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
+                    {program.image ? (
+                        <div className="relative w-full h-full">
+                            <div className="absolute inset-0 bg-black/70 backdrop-blur-xl z-0" />
+                            <img
+                                src={program.image}
+                                alt={program.title}
+                                className="absolute inset-0 w-full h-full object-contain z-10"
+                            />
+                        </div>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                            이미지 없음
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <span className="text-4xl font-bold opacity-20">{program.broadcaster}</span>
                         </div>
                     )}
-                    <div className="absolute top-4 left-4">
-                        <Badge className="bg-black/50 backdrop-blur-md border border-white/10 hover:bg-black/60">
-                            {program.broadcaster}
-                        </Badge>
-                    </div>
                 </div>
 
-                <div className="p-6 space-y-8">
-                    {/* Title & Info */}
+                <div className="p-6 space-y-6">
                     <div>
-                        <div className="flex items-center gap-2 mb-2 text-sm text-violet-400 font-medium">
-                            <span>{program.category}</span>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-bold px-2 py-1 rounded-full bg-secondary text-secondary-foreground">
+                                {program.broadcaster}
+                            </span>
+                            {program.status === 'active' && (
+                                <span className="text-xs font-bold px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                    접수중
+                                </span>
+                            )}
                         </div>
-                        <h1 className="text-2xl font-bold mb-4 leading-tight">{program.title}</h1>
+                        <h1 className="text-2xl font-bold leading-tight mb-4">{program.title}</h1>
 
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-secondary/10 p-4 rounded-2xl border border-white/5">
-                                <p className="text-xs text-muted-foreground mb-1">방청일</p>
-                                <p className="font-bold">{formatDate(program.recordDate, 'MM.dd(EEE)')}</p>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-secondary/10 p-4 rounded-xl">
+                                <span className="text-xs text-muted-foreground block mb-1">녹화일</span>
+                                <span className="font-semibold text-lg block">
+                                    {new Date(program.recordDate).toLocaleDateString("ko-KR", { month: 'long', day: 'numeric', weekday: 'short' })}
+                                </span>
                             </div>
-                            <div className="bg-secondary/10 p-4 rounded-2xl border border-white/5">
-                                <p className="text-xs text-muted-foreground mb-1">신청 마감</p>
-                                <p className="font-bold">{formatDate(program.applyEndDate, 'MM.dd(EEE)')}</p>
+                            <div className="bg-secondary/10 p-4 rounded-xl">
+                                <span className="text-xs text-muted-foreground block mb-1">신청 마감</span>
+                                <span className="font-semibold text-lg block text-red-500">
+                                    {new Date(program.applyEndDate).toLocaleDateString("ko-KR", { month: 'long', day: 'numeric', weekday: 'short' })}
+                                </span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Action */}
-                    <div className="space-y-3">
-                        <Button
-                            className="w-full h-12 text-lg font-bold bg-violet-600 hover:bg-violet-500 shadow-lg shadow-violet-600/20"
-                            onClick={() => {
-                                if (programData.link) window.open(programData.link, '_blank');
-                            }}
+                    {/* Official Link */}
+                    {program.link && (
+                        <a
+                            href={program.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block w-full py-4 text-center bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-colors shadow-lg shadow-violet-500/20"
                         >
-                            신청하러 가기 <ExternalLink className="w-4 h-4 ml-2" />
-                        </Button>
-                        {programData.guideLink && (
-                            <Button
-                                variant="outline"
-                                className="w-full h-10 text-sm border-white/10 hover:bg-white/5"
-                                onClick={() => window.open(programData.guideLink, '_blank')}
-                            >
-                                응모 가이드 대본 보기
-                            </Button>
-                        )}
-                    </div>
+                            공식 홈페이지에서 신청하기
+                        </a>
+                    )}
 
-                    <div className="h-[1px] bg-white/10 my-6" />
+                    {/* Tips Section */}
+                    <TipsSection tips={program.tips} />
+
+                    {/* Location Map */}
+                    <LocationCard broadcaster={program.broadcaster} />
+
+                    <div className="h-px bg-border" />
 
                     {/* Comments */}
-                    <CommentSection programId={program.id} initialComments={comments} />
                 </div>
             </div>
         </MobileWrapper>

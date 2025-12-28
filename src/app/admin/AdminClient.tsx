@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import TrendChart from "@/components/admin/TrendChart";
+import ProgramManager from "@/components/admin/ProgramManager";
 
 interface User {
     id: string;
@@ -111,10 +112,11 @@ export default function AdminClient({ users, stats, extendedStats, requests }: A
                 </div>
 
                 <Tabs defaultValue="stats" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 mb-6">
+                    <TabsList className="grid w-full grid-cols-4 mb-6">
                         <TabsTrigger value="stats">현황</TabsTrigger>
                         <TabsTrigger value="requests">프로그램 요청</TabsTrigger>
                         <TabsTrigger value="users">사용자 목록</TabsTrigger>
+                        <TabsTrigger value="programs">프로그램 관리</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="stats">
@@ -293,6 +295,10 @@ export default function AdminClient({ users, stats, extendedStats, requests }: A
                                 </Card>
                             ))}
                         </div>
+                    </TabsContent>
+
+                    <TabsContent value="programs">
+                        <ProgramManager />
                     </TabsContent>
                 </Tabs>
             </div>

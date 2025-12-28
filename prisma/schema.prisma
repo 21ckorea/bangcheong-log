@@ -89,7 +89,9 @@ model Program {
   recordDate     DateTime
   applyStartDate DateTime
   applyEndDate   DateTime
-  castData       String   // JSON string
+  castData       String?  // JSON string of cast memebers
+  isManual       Boolean  @default(false)
+  tips           String?  @db.Text // Admin curated tips
   link           String?  // Program detail link
   image          String?  // Program thumbnail image
   favorites      FavoriteProgram[]

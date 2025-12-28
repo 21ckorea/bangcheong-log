@@ -74,6 +74,12 @@ export async function GET(request: Request) {
             const safeApplyEnd = program.applyEnd || new Date(new Date().setDate(new Date().getDate() + 7)); // +7 days default
 
             if (existing) {
+                // Skip update if manually edited
+                if (existing.isManual) {
+                    console.log(`Skipping manual program: ${existing.title}`);
+                    continue;
+                }
+
                 // Update
                 await prisma.program.update({
                     where: { id: existing.id },
