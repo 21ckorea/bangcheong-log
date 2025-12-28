@@ -2,6 +2,13 @@
 
 import { ArrowLeft, Bell, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { useSession } from "next-auth/react";
+import LoginButton from "@/components/auth/LoginButton";
+import UserMenu from "@/components/auth/UserMenu";
+import { useState } from "react";
+import RequestDialog from "@/components/request/RequestDialog";
+import NotificationList from "@/components/notification/NotificationList";
 
 interface HeaderProps {
     title?: string;

@@ -15,9 +15,9 @@ interface Program {
     recordDate: Date;
     applyStartDate: Date;
     applyEndDate: Date;
-    link: string;
-    isManual: boolean;
-    tips?: string;
+    link: string | null;
+    isManual?: boolean;
+    tips?: string | null;
 }
 
 export default function ProgramManager() {
@@ -145,9 +145,13 @@ export default function ProgramManager() {
                                         <span>녹화: {new Date(program.recordDate).toLocaleDateString()}</span>
                                         <span>마감: {new Date(program.applyEndDate).toLocaleDateString()}</span>
                                     </div>
-                                    <a href={program.link} target="_blank" className="text-xs text-blue-500 flex items-center gap-0.5 mt-1 hover:underline truncate">
-                                        <ExternalLink className="w-3 h-3" /> {program.link}
-                                    </a>
+                                    {program.link ? (
+                                        <a href={program.link} target="_blank" className="text-xs text-blue-500 flex items-center gap-0.5 mt-1 hover:underline truncate">
+                                            <ExternalLink className="w-3 h-3" /> {program.link}
+                                        </a>
+                                    ) : (
+                                        <span className="text-xs text-muted-foreground mt-1 block">링크 없음</span>
+                                    )}
                                 </div>
 
                                 <div className="flex flex-col gap-2">
@@ -207,7 +211,7 @@ export default function ProgramManager() {
                                 <label className="text-xs font-semibold mb-1 block">신청 링크</label>
                                 <input
                                     className="w-full p-2 rounded border bg-background"
-                                    value={editingProgram.link}
+                                    value={editingProgram.link || ""}
                                     onChange={e => setEditingProgram({ ...editingProgram, link: e.target.value })}
                                 />
                             </div>
