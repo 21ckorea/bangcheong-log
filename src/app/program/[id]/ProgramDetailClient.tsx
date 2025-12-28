@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Calendar, ExternalLink } from "lucide-react";
-import { Program } from "@prisma/client";
+
 import { MobileWrapper } from "@/components/layout/MobileWrapper";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
