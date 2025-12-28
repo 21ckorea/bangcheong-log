@@ -167,7 +167,7 @@ export default function ProgramManager() {
                                         size="sm"
                                         variant="ghost"
                                         className="h-6 text-[10px] px-2"
-                                        onClick={() => handleLockToggle(program.id, program.isManual)}
+                                        onClick={() => handleLockToggle(program.id, program.isManual || false)}
                                     >
                                         {program.isManual ? <span className="flex items-center gap-1 text-orange-500"><Unlock className="w-3 h-3" /> 잠금해제</span> : <span className="flex items-center gap-1 text-gray-500"><Lock className="w-3 h-3" /> 잠금설정</span>}
                                     </Button>
