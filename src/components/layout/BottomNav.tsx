@@ -14,7 +14,7 @@ export const BottomNav = () => {
     const navItems = [
         { name: "홈", path: "/", icon: Home },
         { name: "로그", path: "/log", icon: PenTool },
-        { name: "MY", path: "/profile", icon: User, requiresAuth: true },
+        { name: "MY", path: "/my", icon: User, requiresAuth: true },
     ];
 
     const handleNavClick = (item: typeof navItems[0]) => {

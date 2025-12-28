@@ -17,11 +17,23 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    set -o allexport
+    source "$PROJECT_ROOT/.env"
+    set +o allexport
+fi
 if [ -f "$PROJECT_ROOT/.env.local" ]; then
     set -o allexport
     source "$PROJECT_ROOT/.env.local"
     set +o allexport
-elif [ -f "$SCRIPT_DIR/.env.local" ]; then
+fi
+
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    set -o allexport
+    source "$SCRIPT_DIR/.env"
+    set +o allexport
+fi
+if [ -f "$SCRIPT_DIR/.env.local" ]; then
     set -o allexport
     source "$SCRIPT_DIR/.env.local"
     set +o allexport

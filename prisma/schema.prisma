@@ -20,6 +20,8 @@ model User {
   logs          ApplicationLog[]
   requests      ProgramRequest[]
   notifications Notification[]
+  emailNotification Boolean @default(true)
+  pushNotification  Boolean @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
