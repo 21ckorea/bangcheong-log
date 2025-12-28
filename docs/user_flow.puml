@@ -1,0 +1,48 @@
+@startuml
+!theme plain
+title User Usage Flow - 방청로그
+
+start
+
+:Landing Page;
+note right: Search & Filter Programs
+
+if (Find Desired Program?) then (Yes)
+    :Click Program Card;
+    :<b>Program Detail Page</b>;
+    
+    partition "Information Check" {
+        :Verify Record Date & Deadline;
+        :Check <b>Studio Location Map</b>;
+        :Read <b>Winning Tips</b> (from Admin);
+        :Read User Comments;
+    }
+    
+    if (Decide to Apply?) then (Yes)
+        :Click "Apply on Official Site";
+        :Redirect to Broadcaster Page;
+        :Complete Application External;
+        
+        :<b>Record Application</b>;
+        note right: Log "Applied" status\nto My Page History
+    else (No)
+        :Go back to List;
+    endif
+
+else (No / Not Found)
+    :Click <b>"Request Program"</b>;
+    :Fill Request Form (URL/Title);
+    :Submit Request;
+    stop
+endif
+
+:Go to <b>My Page</b>;
+partition "My Page Activities" {
+    :Check Application History;
+    :View Calendar Schedule;
+    :Manage Notifications;
+}
+
+stop
+
+@enduml

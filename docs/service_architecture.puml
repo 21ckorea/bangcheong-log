@@ -1,0 +1,46 @@
+@startuml
+!theme plain
+title Service Architecture - 방청로그 (Bangcheong-Log)
+
+actor "User (Guesst)" as User
+actor "Administrator" as Admin
+
+rectangle "Client Side (Browser)" {
+    component "Web Frontend" as FE {
+        [React Components]
+        [Tailwind CSS]
+    }
+}
+
+cloud "Vercel Platform" {
+    rectangle "Next.js Server" {
+        component "Server Actions" as Actions
+        component "API Routes" as API
+        component "Cron Job Scheduler" as Cron
+    }
+}
+
+database "Neon PostgreSQL" as DB {
+    [User Data]
+    [Program Data]
+    [Application Logs]
+}
+
+cloud "External Services" {
+    [Google/Kakao Auth] as AuthProvider
+    [Broadcaster Sites (KBS, MBC...)] as Broadcasters
+}
+
+User --> FE : Uses Service
+Admin --> FE : Manages Content
+FE --> Actions : Server Requests (Data Interaction)
+FE --> API : API Calls
+
+Actions --> DB : Query/Update Data
+API --> DB : Query/Update Data
+
+Cron --> API : Triggers Daily Update
+API --> Broadcasters : Crawls Program Data
+FE --> AuthProvider : OAuth Login
+
+@enduml

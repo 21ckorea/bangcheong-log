@@ -1,0 +1,79 @@
+@startuml
+!theme plain
+title 핵심 로직 시퀀스
+
+box "자동화 시스템" #f9f9f9
+    participant "Cron 작업" as Cron
+    participant "크롤러 API" as API
+    participant "방송사 사이트" as Site
+end box
+
+box "백엔드" #e9e9e9
+    database "데이터베이스" as DB
+end box
+
+== 1. 프로그램 자동 업데이트 (크롤러) ==
+Cron -> API : /api/cron/update 트리거 (매일)
+activate API
+
+group 병렬 크롤링 수행
+    API -> Site : 프로그램 페이지 요청 (KBS, SBS...)
+    Site --> API : HTML 반환
+    API -> API : HTML 파싱 -> 데이터 추출
+end
+
+loop 각 프로그램에 대해
+    API -> DB : 기존 프로그램 존재 여부 확인 (제목)
+    
+    alt 기존 프로그램 존재
+        API -> DB : <b>수동 관리(isManual)</b> 플래그 확인
+        
+        alt isManual == true (수동)
+            API -> API : <b>업데이트 건너뛰기</b> (관리자 데이터 보호)
+        else isManual == false (자동)
+            API -> DB : 날짜, 이미지, 링크 업데이트
+        end
+        
+    else 신규 프로그램
+        API -> DB : 새 프로그램 레코드 생성
+    end
+end
+
+API --> Cron : 결과 반환 (생성/업데이트 건수)
+deactivate API
+
+newpage
+
+== 2. 프로그램 요청 및 승인 프로세스 ==
+
+actor "사용자" as User
+participant "웹 클라이언트" as Web
+participant "관리자 대시보드" as AdminUI
+actor "관리자" as Admin
+
+User -> Web : 없는 프로그램 요청 (URL 제출)
+Web -> DB : 요청 생성 (상태: 대기중)
+
+... 일정 시간 후 ...
+
+Admin -> AdminUI : 요청 목록 조회
+AdminUI -> DB : 대기중인 요청 가져오기
+DB --> AdminUI : 목록 반환
+
+Admin -> AdminUI : <b>승인 및 프로그램 추가</b>
+activate AdminUI
+    AdminUI -> DB : 프로그램 데이터 생성/수정
+    AdminUI -> DB : 요청 상태 업데이트 -> '완료(Processed)'
+    
+    AdminUI -> DB : 사용자 <b>알림(Notification)</b> 생성
+    note right: "[제목] 요청이 처리되어 등록되었습니다!"
+deactivate AdminUI
+
+... 사용자가 나중에 접속 시 ...
+
+User -> Web : 사이트 방문
+Web -> DB : 읽지 않은 알림 확인
+DB --> Web : 알림 반환
+Web -> User : "요청 처리 완료" 알림 표시
+
+@enduml

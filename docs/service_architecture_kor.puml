@@ -1,0 +1,46 @@
+@startuml
+!theme plain
+title 서비스 아키텍처 - 방청로그 (Bangcheong-Log)
+
+actor "사용자 (게스트)" as User
+actor "관리자" as Admin
+
+rectangle "클라이언트 (브라우저)" {
+    component "웹 프론트엔드" as FE {
+        [React 컴포넌트]
+        [Tailwind CSS]
+    }
+}
+
+cloud "Vercel 플랫폼" {
+    rectangle "Next.js 서버" {
+        component "서버 액션 (Server Actions)" as Actions
+        component "API 라우트" as API
+        component "Cron 작업 스케줄러" as Cron
+    }
+}
+
+database "Neon PostgreSQL" as DB {
+    [사용자 데이터]
+    [프로그램 데이터]
+    [신청 로그]
+}
+
+cloud "외부 서비스" {
+    [Google/Kakao 인증] as AuthProvider
+    [방송사 사이트 (KBS, MBC...)] as Broadcasters
+}
+
+User --> FE : 서비스 이용
+Admin --> FE : 콘텐츠 관리
+FE --> Actions : 서버 요청 (데이터 상호작용)
+FE --> API : API 호출
+
+Actions --> DB : 데이터 조회/업데이트
+API --> DB : 데이터 조회/업데이트
+
+Cron --> API : 일일 업데이트 트리거
+API --> Broadcasters : 프로그램 데이터 크롤링
+FE --> AuthProvider : OAuth 로그인
+
+@enduml

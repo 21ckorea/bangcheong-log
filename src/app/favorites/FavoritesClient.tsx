@@ -17,7 +17,7 @@ interface Favorite {
         broadcaster: string;
         recordDate: Date;
         applyEndDate: Date;
-        castData: string;
+        castData: string | null;
     };
 }
 

@@ -12,6 +12,7 @@ export async function getComments(programId: string) {
             include: {
                 user: {
                     select: {
+                        id: true,
                         name: true,
                         image: true,
                     },

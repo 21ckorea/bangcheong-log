@@ -1,0 +1,79 @@
+@startuml
+!theme plain
+title Core Logic Sequences
+
+box "Automation" #f9f9f9
+    participant "Cron Job" as Cron
+    participant "Crawler API" as API
+    participant "Broadcaster Site" as Site
+end box
+
+box "Backend" #e9e9e9
+    database "Database" as DB
+end box
+
+== 1. Automated Program Update (Crawler) ==
+Cron -> API : Trigger /api/cron/update (Daily)
+activate API
+
+group Parallel Crawling
+    API -> Site : Fetch Program Pages (KBS, SBS...)
+    Site --> API : Return HTML
+    API -> API : Parse HTML -> Extract Data
+end
+
+loop For Each Program Found
+    API -> DB : Check Existing Program (by Title)
+    
+    alt Program Exists
+        API -> DB : Check <b>isManual</b> Flag
+        
+        alt isManual == true
+            API -> API : <b>SKIP Update</b> (Protect Admin Data)
+        else isManual == false
+            API -> DB : Update Dates, Images, Links
+        end
+        
+    else New Program
+        API -> DB : Create New Program Record
+    end
+end
+
+API --> Cron : Result (Created/Updated Counts)
+deactivate API
+
+newpage
+
+== 2. Program Request & Approval Flow ==
+
+actor "User" as User
+participant "Web Client" as Web
+participant "Admin Dashboard" as AdminUI
+actor "Administrator" as Admin
+
+User -> Web : Request Missing Program (URL)
+Web -> DB : Create Request (Status: Pending)
+
+... Time Passes ...
+
+Admin -> AdminUI : View Request List
+AdminUI -> DB : Fetch Pending Requests
+DB --> AdminUI : Return List
+
+Admin -> AdminUI : <b>Approve & Add Program</b>
+activate AdminUI
+    AdminUI -> DB : Create/Update Program Data
+    AdminUI -> DB : Update Request Status -> 'Processed'
+    
+    AdminUI -> DB : Create <b>Notification</b> for User
+    note right: "Your request for [Title] has been added!"
+deactivate AdminUI
+
+... User Later ...
+
+User -> Web : Visit Site
+Web -> DB : Check Unread Notifications
+DB --> Web : Return Notification
+Web -> User : Display "Request Completed" Alert
+
+@enduml

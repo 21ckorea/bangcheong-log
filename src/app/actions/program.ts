@@ -71,11 +71,14 @@ export async function createProgram(data: {
     recordDate: Date;
     applyStartDate: Date;
     applyEndDate: Date;
-    castData: string;
+    castData?: string | null;
 }) {
     try {
         const program = await prisma.program.create({
-            data,
+            data: {
+                ...data,
+                castData: data.castData ?? '[]'
+            },
         });
         return { success: true, data: program };
     } catch (error) {

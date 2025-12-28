@@ -144,7 +144,7 @@ export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: 
                                     <div className="w-full flex-1 relative bg-gray-200">
                                         {(() => {
                                             try {
-                                                const data = JSON.parse(program.castData);
+                                                const data = JSON.parse(program.castData || '{}');
                                                 if (data.image && !errorImages[program.id]) {
                                                     return (
                                                         <img
@@ -206,7 +206,7 @@ export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: 
                                         <div className="flex gap-2">
                                             {(() => {
                                                 try {
-                                                    const data = JSON.parse(program.castData);
+                                                    const data = JSON.parse(program.castData || '{}');
                                                     return data.guideLink ? (
                                                         <Button
                                                             size="sm"

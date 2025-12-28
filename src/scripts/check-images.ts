@@ -8,7 +8,7 @@ async function main() {
     programs.forEach(p => {
         console.log(`[${p.broadcaster}] ${p.title}`);
         try {
-            const data = JSON.parse(p.castData);
+            const data = JSON.parse(p.castData || '{}');
             console.log(`   Image: ${data.image || 'NONE'}`);
             console.log(`   Link: ${data.link}`);
         } catch (e) {

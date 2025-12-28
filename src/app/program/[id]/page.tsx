@@ -5,6 +5,8 @@ import { getProgram } from "@/app/actions/program";
 import { getComments } from "@/app/actions/comment";
 import ProgramDetailClient from "./ProgramDetailClient";
 
+import { auth } from "@/lib/auth.config";
+
 type Props = {
     params: Promise<{ id: string }>
 }
@@ -24,7 +26,7 @@ export async function generateMetadata(
 
     let imageUrl = "/og-image.png";
     try {
-        const data = JSON.parse(program.castData);
+        const data = JSON.parse(program.castData || '{}');
         if (data.image) imageUrl = data.image;
     } catch (e) { }
 
@@ -47,6 +49,7 @@ export async function generateMetadata(
 
 export default async function ProgramPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const session = await auth();
 
     const programResult = await getProgram(id);
 
@@ -54,8 +57,27 @@ export default async function ProgramPage({ params }: { params: Promise<{ id: st
         notFound();
     }
 
+    const program = programResult.data;
+
     const commentsResult = await getComments(id);
+    // ProgramDetailClient expects Comment[], but getComments returns (Comment & {user: ...})[]
+    // The mismatch is resolved by recent fix to getComments to include user.id
     const comments = commentsResult.success && commentsResult.data ? commentsResult.data : [];
 
-    return <ProgramDetailClient program={programResult.data} comments={comments} />;
+    const getStatus = (p: any) => {
+        const now = new Date();
+        const end = new Date(p.applyEndDate);
+        return now <= end ? 'active' : 'closed';
+    };
+
+    return (
+        <ProgramDetailClient
+            program={{
+                ...program,
+                status: getStatus(program)
+            }}
+            initialComments={comments}
+            userId={session?.user?.id}
+        />
+    );
 }

@@ -9,7 +9,7 @@ export async function GET() {
             try {
                 return {
                     title: p.title,
-                    castData: JSON.parse(p.castData)
+                    castData: JSON.parse(p.castData || '[]')
                 };
             } catch {
                 return { title: p.title, error: 'Parse failed' };
