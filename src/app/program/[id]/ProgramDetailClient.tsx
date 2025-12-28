@@ -7,6 +7,7 @@ import { MobileWrapper } from "@/components/layout/MobileWrapper";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import CommentSection from "@/components/program/CommentSection";
+import ShareButton from "@/components/common/ShareButton";
 import { formatDate } from "date-fns";
 
 interface ProgramDetailClientProps {
@@ -30,6 +31,7 @@ export default function ProgramDetailClient({ program, comments }: ProgramDetail
                     <ArrowLeft className="w-5 h-5" />
                 </button>
                 <span className="font-bold text-lg truncate flex-1">{program.title}</span>
+                <ShareButton title={program.title} text={`${program.broadcaster} ${program.category} 방청 신청하세요!`} />
             </div>
 
             <div className="p-0">
