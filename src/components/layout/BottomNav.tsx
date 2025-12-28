@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, Calendar, PenTool, User } from "lucide-react";
+import { Home, Calendar, PenTool, User, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession, signIn } from "next-auth/react";
 
@@ -14,6 +14,7 @@ export const BottomNav = () => {
     const navItems = [
         { name: "홈", path: "/", icon: Home },
         { name: "로그", path: "/log", icon: PenTool },
+        { name: "후기", path: "/community", icon: MessageSquare },
         { name: "MY", path: "/my", icon: User, requiresAuth: true },
     ];
 

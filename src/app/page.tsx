@@ -7,9 +7,18 @@ import HomeClient from "@/components/home/HomeClient";
 
 export const dynamic = "force-dynamic"; // Ensure fresh data on every request
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string; status?: 'active' | 'closing' | 'all'; broadcaster?: string }>;
+}) {
   const session = await auth();
-  const { success, data } = await getPrograms();
+  const params = await searchParams;
+  const { success, data } = await getPrograms({
+    search: params.search,
+    status: params.status,
+    broadcaster: params.broadcaster,
+  });
   const programs = success && data ? data : [];
 
   // Get user's favorites and logs if logged in

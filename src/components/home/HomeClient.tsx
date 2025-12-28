@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { Header } from "@/components/layout/Header";
@@ -13,8 +14,7 @@ import { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import FavoriteButton from "@/components/programs/FavoriteButton";
 import ApplicationLogButton from "@/components/programs/ApplicationLogButton";
-
-const CATEGORIES = ["전체", "음악방송", "토크쇼", "예능", "공개방송"];
+import SearchFilter from "@/components/main/SearchFilter";
 
 // Helper to calculate D-Day
 function calculateDDay(targetDate: Date) {
@@ -74,6 +74,7 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: HomeClientProps) {
+    const router = useRouter();
     const [selectedCategory, setSelectedCategory] = useState("전체");
     const [errorImages, setErrorImages] = useState<Record<string, boolean>>({});
     const { data: session } = useSession();
@@ -87,7 +88,7 @@ export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: 
             <Header />
 
             {/* Hero Section */}
-            <section className="px-6 py-8">
+            <section className="px-6 pt-8 pb-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -97,73 +98,38 @@ export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: 
                         ✨ 모든 방송사 방청 정보가 한곳에!
                     </div>
                     <h1 className="text-3xl font-bold leading-tight">
-                        흩어진 방청 신청, <br />
                         <span className="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
-                            알림 받고 한 번에
+                            방청로그
                         </span>
-                        <br />
-                        성공해봐!
+                        에서<br />
+                        당첨의 기회를 잡아봐!
                     </h1>
-                    <p className="mt-3 text-muted-foreground leading-relaxed">
-                        최소한의 노력으로 최대의 당첨 확률! <br />
-                        방청 기록은 덤이야 😉
-                    </p>
-                </motion.div>
-
-                {/* Search Bar */}
-                <motion.div
-                    className="mt-6 relative"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        <Search className="h-4 w-4" />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="어떤 방송을 찾고 있니?"
-                        className="w-full h-12 rounded-2xl bg-secondary/30 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium placeholder:text-muted-foreground/50 text-foreground"
-                    />
                 </motion.div>
             </section>
 
-            {/* Categories */}
-            <section className="pl-6 overflow-x-auto scrollbar-hide mb-8">
-                <div className="flex gap-2 pr-6 w-max">
-                    {CATEGORIES.map((cat, idx) => (
-                        <motion.button
-                            key={cat}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 + idx * 0.1 }}
-                            onClick={() => setSelectedCategory(cat)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${selectedCategory === cat
-                                ? "bg-primary text-white shadow-lg shadow-primary/25"
-                                : "bg-secondary/20 text-secondary-foreground hover:bg-secondary/30 border border-white/5"
-                                }`}
-                        >
-                            {cat}
-                        </motion.button>
-                    ))}
-                </div>
+            {/* Search & Filter */}
+            <section className="px-6 mb-6 sticky top-0 z-40">
+                <SearchFilter />
             </section>
 
             {/* Program List */}
             <section className="px-6 space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold">마감 임박! 🔥</h2>
-                    <button className="text-xs text-muted-foreground hover:text-primary transition-colors">전체보기</button>
+                    <h2 className="text-xl font-bold">진행중인 방청</h2>
                 </div>
 
                 {filteredPrograms.length === 0 ? (
                     <div className="text-center py-10 text-muted-foreground bg-secondary/5 rounded-xl border border-dashed border-white/10">
-                        <p>등록된 방청 정보가 없습니다.</p>
-                        <p className="text-xs mt-1 opacity-50">크롤러가 열심히 일하는 중일지도 몰라요! 🤖</p>
+                        <p>검색 결과가 없습니다.</p>
+                        <p className="text-xs mt-1 opacity-50">다른 검색어나 필터를 선택해보세요! 🕵️</p>
                     </div>
                 ) : (
                     filteredPrograms.map((program) => (
-                        <Card key={program.id} className="overflow-hidden border-0 bg-secondary/10 hover:bg-secondary/20 transition-colors group cursor-pointer">
+                        <Card
+                            key={program.id}
+                            onClick={() => router.push(`/program/${program.id}`)}
+                            className="overflow-hidden border-0 bg-secondary/10 hover:bg-secondary/20 transition-colors group cursor-pointer"
+                        >
                             <CardContent className="p-0 flex h-auto min-h-40">
                                 {/* Left Section: Split into Gradient Top + Image Bottom */}
                                 <div className="w-28 h-full flex flex-col shrink-0 overflow-hidden">
@@ -265,19 +231,8 @@ export default function HomeClient({ programs, favoriteIds, loggedProgramIds }: 
                                                 className="h-7 text-xs px-3 hover:bg-primary/10 hover:text-primary"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-
-                                                    // Check if user is logged in
-                                                    if (!session) {
-                                                        signIn("google");
-                                                        return;
-                                                    }
-
-                                                    try {
-                                                        const data = JSON.parse(program.castData);
-                                                        if (data.link) {
-                                                            window.open(data.link, '_blank');
-                                                        }
-                                                    } catch (err) { }
+                                                    // Navigate to detail page
+                                                    router.push(`/program/${program.id}`);
                                                 }}
                                             >
                                                 자세히 보기 &rarr;

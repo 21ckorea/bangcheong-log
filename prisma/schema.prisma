@@ -20,6 +20,8 @@ model User {
   logs          ApplicationLog[]
   requests      ProgramRequest[]
   notifications Notification[]
+  reviews       Review[]
+  comments      Comment[]
   emailNotification Boolean @default(true)
   pushNotification  Boolean @default(true)
   createdAt     DateTime  @default(now())
@@ -34,11 +36,11 @@ model Account {
   provider          String
   providerAccountId String
   refresh_token     String?
-  access_token      String?
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
@@ -80,7 +82,7 @@ model ApplicationLog {
 }
 
 model Program {
-  id             String   @id @default(uuid())
+  id             String           @id @default(cuid())
   title          String
   category       String
   broadcaster    String
@@ -92,8 +94,32 @@ model Program {
   image          String?  // Program thumbnail image
   favorites      FavoriteProgram[]
   logs           ApplicationLog[]
+  comments       Comment[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  images    String[] // URLs
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId String
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProgramRequest {
