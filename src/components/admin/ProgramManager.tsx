@@ -5,7 +5,7 @@ import { getAdminPrograms, updateProgram, deleteProgram, toggleProgramLock } fro
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
-import { Search, Loader2, Edit2, Trash2, Lock, Unlock, ExternalLink } from "lucide-react";
+import { Search, Loader2, Edit2, Trash2, Lock, Unlock, ExternalLink, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface Program {
@@ -104,7 +104,20 @@ export default function ProgramManager() {
 
     const formatDateForInput = (date: Date | string) => {
         if (!date) return "";
-        return new Date(date).toISOString().split('T')[0];
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const formatTimeForInput = (date: Date | string) => {
+        if (!date) return "";
+        const d = new Date(date);
+        const h = d.getHours();
+        const m = d.getMinutes();
+        if (h === 0 && m === 0) return ""; // Treat 00:00 as "No Time"
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     };
 
     return (
@@ -142,8 +155,14 @@ export default function ProgramManager() {
                                     </div>
                                     <h3 className="font-semibold truncate">{program.title}</h3>
                                     <div className="text-xs text-muted-foreground mt-1 flex gap-2">
-                                        <span>녹화: {new Date(program.recordDate).toLocaleDateString()}</span>
-                                        <span>마감: {new Date(program.applyEndDate).toLocaleDateString()}</span>
+                                        <span>
+                                            녹화: {new Date(program.recordDate).toLocaleDateString()}
+                                            {formatTimeForInput(program.recordDate) && ` ${formatTimeForInput(program.recordDate)}`}
+                                        </span>
+                                        <span>
+                                            마감: {new Date(program.applyEndDate).toLocaleDateString()}
+                                            {formatTimeForInput(program.applyEndDate) && ` ${formatTimeForInput(program.applyEndDate)}`}
+                                        </span>
                                     </div>
                                     {program.link ? (
                                         <a href={program.link} target="_blank" className="text-xs text-blue-500 flex items-center gap-0.5 mt-1 hover:underline truncate">
@@ -216,24 +235,98 @@ export default function ProgramManager() {
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-3">
                             <div>
                                 <label className="text-xs font-semibold mb-1 block">녹화일</label>
-                                <input
-                                    type="date"
-                                    className="w-full p-2 rounded border bg-background"
-                                    value={formatDateForInput(editingProgram.recordDate)}
-                                    onChange={e => setEditingProgram({ ...editingProgram, recordDate: new Date(e.target.value) })}
-                                />
+                                <div className="flex gap-2 items-center">
+                                    <input
+                                        type="date"
+                                        className="flex-1 p-2 rounded border bg-background dark:[color-scheme:dark]"
+                                        value={formatDateForInput(editingProgram.recordDate)}
+                                        onChange={e => {
+                                            const newDate = new Date(editingProgram.recordDate);
+                                            const [y, m, d] = e.target.value.split('-').map(Number);
+                                            newDate.setFullYear(y, m - 1, d);
+                                            setEditingProgram({ ...editingProgram, recordDate: newDate });
+                                        }}
+                                    />
+                                    <div className="relative">
+                                        <input
+                                            type="time"
+                                            className="w-36 p-2 rounded border bg-background dark:[color-scheme:dark]"
+                                            value={formatTimeForInput(editingProgram.recordDate)}
+                                            onChange={e => {
+                                                const newDate = new Date(editingProgram.recordDate);
+                                                if (e.target.value) {
+                                                    const [h, m] = e.target.value.split(':').map(Number);
+                                                    newDate.setHours(h, m);
+                                                } else {
+                                                    newDate.setHours(0, 0); // Reset to "None"
+                                                }
+                                                setEditingProgram({ ...editingProgram, recordDate: newDate });
+                                            }}
+                                        />
+                                        {formatTimeForInput(editingProgram.recordDate) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newDate = new Date(editingProgram.recordDate);
+                                                    newDate.setHours(0, 0);
+                                                    setEditingProgram({ ...editingProgram, recordDate: newDate });
+                                                }}
+                                                className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label className="text-xs font-semibold mb-1 block">마감일</label>
-                                <input
-                                    type="date"
-                                    className="w-full p-2 rounded border bg-background"
-                                    value={formatDateForInput(editingProgram.applyEndDate)}
-                                    onChange={e => setEditingProgram({ ...editingProgram, applyEndDate: new Date(e.target.value) })}
-                                />
+                                <div className="flex gap-2 items-center">
+                                    <input
+                                        type="date"
+                                        className="flex-1 p-2 rounded border bg-background dark:[color-scheme:dark]"
+                                        value={formatDateForInput(editingProgram.applyEndDate)}
+                                        onChange={e => {
+                                            const newDate = new Date(editingProgram.applyEndDate);
+                                            const [y, m, d] = e.target.value.split('-').map(Number);
+                                            newDate.setFullYear(y, m - 1, d);
+                                            setEditingProgram({ ...editingProgram, applyEndDate: newDate });
+                                        }}
+                                    />
+                                    <div className="relative">
+                                        <input
+                                            type="time"
+                                            className="w-36 p-2 rounded border bg-background dark:[color-scheme:dark]"
+                                            value={formatTimeForInput(editingProgram.applyEndDate)}
+                                            onChange={e => {
+                                                const newDate = new Date(editingProgram.applyEndDate);
+                                                if (e.target.value) {
+                                                    const [h, m] = e.target.value.split(':').map(Number);
+                                                    newDate.setHours(h, m);
+                                                } else {
+                                                    newDate.setHours(0, 0); // Reset to "None"
+                                                }
+                                                setEditingProgram({ ...editingProgram, applyEndDate: newDate });
+                                            }}
+                                        />
+                                        {formatTimeForInput(editingProgram.applyEndDate) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newDate = new Date(editingProgram.applyEndDate);
+                                                    newDate.setHours(0, 0);
+                                                    setEditingProgram({ ...editingProgram, applyEndDate: newDate });
+                                                }}
+                                                className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div>

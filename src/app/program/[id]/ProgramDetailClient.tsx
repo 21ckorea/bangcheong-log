@@ -8,11 +8,38 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import CommentSection from "@/components/program/CommentSection";
 import ShareButton from "@/components/common/ShareButton";
-import { formatDate } from "date-fns";
+import { formatDate as formatDateFns } from "date-fns";
 import { LocationCard } from "@/components/program/LocationCard";
 import { TipsSection } from "@/components/program/TipsSection";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+
+function formatDate(date: Date | string) {
+    const d = new Date(date);
+    const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0;
+
+    const dateStr = d.toLocaleDateString("ko-KR", {
+        month: "long",
+        day: "numeric",
+        weekday: "short",
+    });
+
+    if (hasTime) {
+        const timeStr = d.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        });
+        return (
+            <span className="flex flex-col">
+                <span>{dateStr}</span>
+                <span className="text-sm opacity-80">{timeStr}</span>
+            </span>
+        );
+    }
+
+    return dateStr;
+}
 
 interface Program {
     id: string;
@@ -92,13 +119,13 @@ export default function ProgramDetailClient({ program, initialComments, userId }
                             <div className="bg-secondary/10 p-4 rounded-xl">
                                 <span className="text-xs text-muted-foreground block mb-1">녹화일</span>
                                 <span className="font-semibold text-lg block">
-                                    {new Date(program.recordDate).toLocaleDateString("ko-KR", { month: 'long', day: 'numeric', weekday: 'short' })}
+                                    {formatDate(program.recordDate)}
                                 </span>
                             </div>
                             <div className="bg-secondary/10 p-4 rounded-xl">
                                 <span className="text-xs text-muted-foreground block mb-1">신청 마감</span>
                                 <span className="font-semibold text-lg block text-red-500">
-                                    {new Date(program.applyEndDate).toLocaleDateString("ko-KR", { month: 'long', day: 'numeric', weekday: 'short' })}
+                                    {formatDate(program.applyEndDate)}
                                 </span>
                             </div>
                         </div>

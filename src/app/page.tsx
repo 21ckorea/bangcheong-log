@@ -12,29 +12,47 @@ export default async function Home({
 }: {
   searchParams: Promise<{ search?: string; status?: 'active' | 'closing' | 'all'; broadcaster?: string }>;
 }) {
-  const session = await auth();
-  const params = await searchParams;
-  const { success, data } = await getPrograms({
+  // Start independent fetches immediately
+  const paramsPromise = searchParams;
+  const sessionPromise = auth();
+
+  // Await params to start programs fetch (params is fast)
+  const params = await paramsPromise;
+
+  const programsPromise = getPrograms({
     search: params.search,
     status: params.status,
     broadcaster: params.broadcaster,
   });
-  const programs = success && data ? data : [];
 
-  // Get user's favorites and logs if logged in
+  const session = await sessionPromise;
+
+  // Prepare user-dependent fetches
+  let favoritesPromise = Promise.resolve({ success: true, data: [] } as any);
+  let logsPromise = Promise.resolve({ success: true, data: [] } as any);
+
+  if (session?.user) {
+    favoritesPromise = getFavoritePrograms();
+    logsPromise = getApplicationLogs();
+  }
+
+  const [programsResult, favoritesResult, logsResult] = await Promise.all([
+    programsPromise,
+    favoritesPromise,
+    logsPromise
+  ]);
+
+  const programs = programsResult.success && programsResult.data ? programsResult.data : [];
+
   let favoriteIds: string[] = [];
   let loggedProgramIds: string[] = [];
 
-  if (session?.user) {
-    const favoritesResult = await getFavoritePrograms();
-    if (favoritesResult.success && favoritesResult.data) {
-      favoriteIds = favoritesResult.data.map(fav => fav.program.id);
-    }
+  if (favoritesResult.success && favoritesResult.data) {
+    favoriteIds = favoritesResult.data.map((fav: any) => fav.program.id);
+  }
 
-    const logsResult = await getApplicationLogs();
-    if (logsResult.success && logsResult.data) {
-      loggedProgramIds = logsResult.data.map(log => log.program.id);
-    }
+  if (logsResult.success && logsResult.data) {
+    loggedProgramIds = logsResult.data.map((log: any) => log.program.id);
   }
 
   return <HomeClient programs={programs} favoriteIds={favoriteIds} loggedProgramIds={loggedProgramIds} />;
